@@ -1,5 +1,4 @@
 import java.io.*;
-import java.nio.ByteBuffer;
 
 /**
  * header:
@@ -39,7 +38,7 @@ public class FileWithHeader {
     }
 
     // считываем кусками заголовок и заполняем соответсвующие поля
-    public void getHeader() {
+    public void setHeader() {
         try {
             byte[] buff = new byte[4];
             in.read(buff);
@@ -50,7 +49,6 @@ public class FileWithHeader {
             labNumber = in.read();
             filesCount = in.read();
             sourceFileLength = readBytes(in, 2);
-            dataLength = readBytes(in, 4);
             dataLength = readBytes(in, 4);
             subheaderLength = readBytes(in, 4);
         } catch (IOException e) {
@@ -108,4 +106,15 @@ public class FileWithHeader {
         return result;
     }
 
+    //TODO: возможно косяк с корректностью преобразования строки в последовательность байтов
+    public String getHeader() {
+        return sign +
+                version +
+                compressionType +
+                labNumber +
+                filesCount +
+                sourceFileLength +
+                dataLength +
+                subheaderLength;
+    }
 }
