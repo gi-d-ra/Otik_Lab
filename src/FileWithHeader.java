@@ -25,12 +25,13 @@ public class FileWithHeader {
     private int dataLength;
     private int subheaderLength;
 
+
     InputStream in;
     File file;
 
-    public FileWithHeader(String file) {
+    public FileWithHeader(File file) {
         try {
-            this.file = new File(file);
+            this.file = file;
             this.in = new FileInputStream(this.file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
