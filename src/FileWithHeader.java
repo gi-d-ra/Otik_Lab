@@ -2,16 +2,18 @@ import java.io.*;
 
 /**
  * header:
- * 0-3  -4b-sign
- * 4-5  -2b-version
- * 6    -1b-compression types
- * 7    -1b-lab number
- * 8    -1b-files count
- * 9-15 -8b-reserved
+ * 0-3   -4b-sign
+ * 4-5   -2b-version
+ * 6     -1b-compression types
+ * 7     -1b-lab number
+ * 8     -1b-files count
+ * 9-15  -7b-reserved
  * 16-19 -4b-source file length
  * 20-23 -4b-data length
  * 24-27 -4b-subheader length
  * 28-31 -4b-reserved
+ *
+ * all bytes: 32
  */
 
 public class FileWithHeader {
@@ -49,6 +51,7 @@ public class FileWithHeader {
             compressionType = in.read();
             labNumber = in.read();
             filesCount = in.read();
+            in.skip(7);
             sourceFileLength = readBytes(in, 2);
             dataLength = readBytes(in, 4);
             subheaderLength = readBytes(in, 4);
