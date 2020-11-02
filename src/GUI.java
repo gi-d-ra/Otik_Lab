@@ -9,7 +9,6 @@ public class GUI {
     private JButton chooseFileButton;
     private JButton archiveButton;
     private JButton unarchiveButton;
-    private JButton readHeader;
     private JLabel fileChoosedLabel;
     private File file;
     private FileWithHeader header;
@@ -33,7 +32,7 @@ public class GUI {
         textArea = new JTextArea();
         JScrollPane scrollPane = new JScrollPane(textArea);
 
-        upperPanel1.setLayout(new GridLayout(1,3));
+        upperPanel1.setLayout(new GridLayout(1,2));
         upperPanel2.setLayout(new GridLayout(1,2));
 
         upperPanels.add(upperPanel1);
@@ -42,14 +41,12 @@ public class GUI {
         chooseFileButton = new JButton("Выбрать файл");
         archiveButton = new JButton("Архивировать");
         unarchiveButton = new JButton("Разархивировать");
-        readHeader = new JButton("чтение заголовка");
 
         fileChoosedLabel = new JLabel("файл не выбран");
         fileChoosedLabel.setForeground(new Color(255, 20, 57));
 
         upperPanel1.add(chooseFileButton);
         upperPanel1.add(fileChoosedLabel);
-        upperPanel1.add(readHeader);
         upperPanel2.add(archiveButton);
         upperPanel2.add(unarchiveButton);
         upperPanels.add(scrollPane);
@@ -60,7 +57,9 @@ public class GUI {
                 StringBuilder resultStringBuilder = getStringBuilder();
 
                 String archived = Archiver.compression(resultStringBuilder.toString());
-                file.getParentFile();
+
+                writeFile(archived, "archived");
+
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -77,7 +76,8 @@ public class GUI {
                 StringBuilder resultStringBuilder = getStringBuilder();
 
                 String unarchived = Archiver.decompression(resultStringBuilder.toString());
-                file.getParentFile();
+
+                writeFile(unarchived, "unarchived");
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -104,26 +104,28 @@ public class GUI {
             fileChoosedLabel.setForeground(new Color(29, 191,10));
         });
 
-        readHeader.addActionListener( l -> {
-            header.setHeader();
-            textArea.setText("");
-            textArea.append(
-                    "sign: "+ header.getSign() +"\n"+
-                    "version: "+ header.getVersion() +"\n"+
-                    "compression type: "+ header.getCompressionType() +"\n"+
-                    "lab number: "+ header.getLabNumber() +"\n"+
-                    "files count: "+ header.getFilesCount() +"\n"+
-                    "source file length: "+ header.getSourceFileLength() +"\n"+
-                    "data length: "+ header.getDataLength() +"\n"+
-                    "subheader length: "+ header.getSubheaderLength() +"\n"
-            );
-        });
+
 
         frame.getContentPane().add(BorderLayout.CENTER,upperPanels);
 
         frame.setSize(500,300);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
+    }
+
+    private void writeFile(String unarchived, String name) throws IOException {
+        String fileSeparator = System.getProperty("file.separator");
+        String absoluteFilePath = file.getParentFile() + fileSeparator + name+(int)(Math.random()*1000)+".otik";
+        File newFile = new File(absoluteFilePath);
+        if (file.createNewFile()) {
+            System.out.println(absoluteFilePath + " File Created");
+        }
+
+        byte[] byteArray = unarchived.getBytes();
+
+        FileOutputStream out = new FileOutputStream(absoluteFilePath);
+        out.write(byteArray);
+        out.close();
     }
 
     private StringBuilder getStringBuilder() throws IOException {
