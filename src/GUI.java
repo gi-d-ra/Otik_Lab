@@ -18,7 +18,7 @@ public class GUI {
     }
 
     public void buildGui(){
-        JFrame frame = new JFrame("Chat");
+        JFrame frame = new JFrame("Otik");
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
@@ -42,7 +42,7 @@ public class GUI {
         archiveButton = new JButton("Архивировать");
         unarchiveButton = new JButton("Разархивировать");
 
-        fileChoosedLabel = new JLabel("файл не выбран");
+        fileChoosedLabel = new JLabel("                     Файл не выбран");
         fileChoosedLabel.setForeground(new Color(255, 20, 57));
 
         upperPanel1.add(chooseFileButton);
@@ -138,6 +138,7 @@ public class GUI {
         while ((line = br.readLine()) != null) {
             resultStringBuilder.append(line).append("\n");
         }
+        resultStringBuilder.replace(resultStringBuilder.lastIndexOf("\n"),resultStringBuilder.length(),"");
         return resultStringBuilder;
     }
 }
