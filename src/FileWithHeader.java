@@ -28,7 +28,7 @@ import java.net.URI;
  * 0071
  * 0032
  * ....
-*/
+ */
 
 public class FileWithHeader extends File {
 
@@ -214,7 +214,7 @@ public class FileWithHeader extends File {
             return "00" + sourceFileLength;
         else if (sourceFileLength < 1000)
             return "0" + sourceFileLength;
-        else return sourceFileLength + "";
+        else return sourceFileLength % 10000 + "";
     }
 
     private String getStringDataLength() {
@@ -225,10 +225,10 @@ public class FileWithHeader extends File {
             return "00" + dataLength;
         else if (dataLength < 1000)
             return "0" + dataLength;
-        else return dataLength + "";
+        else return dataLength % 10000 + "";
     }
 
-    private String getStringSubheaderLength(){
+    private String getStringSubheaderLength() {
         return "0032";
     }
 }

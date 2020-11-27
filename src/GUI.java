@@ -113,7 +113,7 @@ public class GUI {
         unarchiveButton.addActionListener(l -> {
             StringBuilder unarchived = new StringBuilder();
             try {
-                controller.getInfoFromFile();
+                controller.getInfoFromFileWithHeader();
                 switch (model.getFile().getCompressionType()) {
                     case 0 -> {
                         unarchived.append(model.getFile().getSourceBuilder());

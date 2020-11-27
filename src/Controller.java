@@ -29,6 +29,22 @@ public class Controller {
         model.getFile().getSourceBuilder().append(resultStringBuilder.toString());
     }
 
+    public void getInfoFromFileWithHeader() throws IOException {
+        FileReader reader;
+        StringBuilder resultStringBuilder = new StringBuilder();
+        reader = new FileReader(model.getFile());
+
+        BufferedReader br = new BufferedReader(reader);
+        String line;
+        while ((line = br.readLine()) != null) {
+            resultStringBuilder.append(line).append("\n");
+        }
+        resultStringBuilder.replace(resultStringBuilder.lastIndexOf("\n"), resultStringBuilder.length(), "");
+        model.getFile().setHeader(resultStringBuilder.substring(0, 31));
+        model.getFile().setSourceBuilder(new StringBuilder());
+        model.getFile().getSourceBuilder().append(resultStringBuilder.substring(32));
+    }
+
     private void writeHeader(File outFile) throws IOException {
         RandomAccessFile raf = new RandomAccessFile(outFile, "rw");
         model.getFile().setSourceFileLength((int) (outFile.length()));
