@@ -69,7 +69,7 @@ public class GUI {
         compressionTypes = new ButtonGroup();
         compressionTypes.add(r1);
         compressionTypes.add(r2);
-        r2.doClick();
+        r1.doClick();
 
         r1.setBounds(75, 50, 100, 30);
         r2.setBounds(75, 100, 100, 30);
@@ -87,15 +87,14 @@ public class GUI {
 
         archiveButton.addActionListener(l -> {
             try {
-//                controller.getInfoFromFile();
-
                 if (r1.isSelected()) {
+                    controller.getInfoFromFile();
                     model.getFile().setCompressionType(1);
                     model.getFile().setLabNumber(3);
                     model.getFile().setFilesCount(1);
                     StringBuilder archived = Archiver.defCompression(model.getFile().getSourceBuilder());
                     model.getFile().setSourceBuilder(archived);
-                    controller.writeFileDef(model.getFile(), absoluteFilePathToWrite);
+                    controller.writeFileDefWithHeader(model.getFile(), absoluteFilePathToWrite);
                 }
                 if (r2.isSelected()) {
                     model.getFile().setCompressionType(2);
@@ -116,7 +115,10 @@ public class GUI {
             try {
                 controller.getInfoFromFile();
                 switch (model.getFile().getCompressionType()) {
-                    case 0 -> unarchived.append(model.getFile().getSourceBuilder());
+                    case 0 -> {
+                        unarchived.append(model.getFile().getSourceBuilder());
+                        controller.writeFileDef(model.getFile(), absoluteFilePathToWrite);
+                    }
                     case 1 -> {
                         unarchived.append(Archiver.defDecompression(model.getFile().getSourceBuilder()));
                         model.getFile().setSourceBuilder(unarchived);

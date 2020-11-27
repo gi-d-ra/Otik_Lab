@@ -25,9 +25,8 @@ public class Controller {
             resultStringBuilder.append(line).append("\n");
         }
         resultStringBuilder.replace(resultStringBuilder.lastIndexOf("\n"), resultStringBuilder.length(), "");
-        model.getFile().setHeader(resultStringBuilder.substring(0, 31));
         model.getFile().setSourceBuilder(new StringBuilder());
-        model.getFile().getSourceBuilder().append(resultStringBuilder.substring(32));
+        model.getFile().getSourceBuilder().append(resultStringBuilder.toString());
     }
 
     private void writeHeader(File outFile) throws IOException {
@@ -49,8 +48,22 @@ public class Controller {
         out.close();
     }
 
-
     public void writeFileDef(FileWithHeader file, String absoluteFilePath) throws IOException {
+        String fileSeparator = System.getProperty("file.separator");
+        File finalFile = new File(absoluteFilePath + fileSeparator + file.getName());
+        if (finalFile.createNewFile()) {
+            System.out.println(absoluteFilePath + " File Created");
+        }
+
+        byte[] sourceBytes = file.getSourceBuilder().toString().getBytes();
+
+        FileOutputStream out = new FileOutputStream(finalFile);
+        out.write(sourceBytes);
+        out.flush();
+        out.close();
+    }
+
+    public void writeFileDefWithHeader(FileWithHeader file, String absoluteFilePath) throws IOException {
         String fileSeparator = System.getProperty("file.separator");
         File finalFile = new File(absoluteFilePath + fileSeparator + file.getName());
         if (finalFile.createNewFile()) {
