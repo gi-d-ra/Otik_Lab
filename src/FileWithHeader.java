@@ -1,4 +1,5 @@
 import java.io.*;
+import java.net.URI;
 
 /**
  * header:
@@ -12,13 +13,26 @@ import java.io.*;
  * 20-23 -4b-data length
  * 24-27 -4b-subheader length
  * 28-31 -4b-reserved
- *
+ * <p>
  * all bytes: 32
  */
 
-public class FileWithHeader {
+/**
+ * otik
+ * 01
+ * 0
+ * 3
+ * 1
+ * .......
+ * 0039
+ * 0071
+ * 0032
+ * ....
+*/
 
-    private String sign;
+public class FileWithHeader extends File {
+
+    private String sign = "otik";
     private int version;
     private int compressionType;
     private int labNumber;
@@ -27,21 +41,50 @@ public class FileWithHeader {
     private int dataLength;
     private int subheaderLength;
 
+    private StringBuilder source = new StringBuilder();
 
-    InputStream in;
-    File file;
+    public void setSourceFileLength(int sourceFileLength) {
+        this.sourceFileLength = sourceFileLength;
+    }
+
+    public void setDataLength(int dataLength) {
+        this.dataLength = dataLength;
+    }
+
+    public StringBuilder getSourceBuilder() {
+        return source;
+    }
+
+    public void setSourceBuilder(StringBuilder source) {
+        this.source = source;
+    }
 
     public FileWithHeader(File file) {
-        try {
-            this.file = file;
-            this.in = new FileInputStream(this.file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        super(file.getPath());
+    }
+
+    public FileWithHeader(String pathname) {
+        super(pathname);
+    }
+
+    public FileWithHeader(String parent, String child) {
+        super(parent, child);
+    }
+
+    public FileWithHeader(File parent, String child) {
+        super(parent, child);
+    }
+
+    public FileWithHeader(URI uri) {
+        super(uri);
+    }
+
+    public void setCompressionType(int compressionType) {
+        this.compressionType = compressionType;
     }
 
     // считываем кусками заголовок и заполняем соответсвующие поля
-    public void setHeader() {
+    public void setHeader(InputStream in) {
         try {
             byte[] buff = new byte[4];
             in.read(buff);
@@ -60,6 +103,17 @@ public class FileWithHeader {
         }
     }
 
+    public void setHeader(String header) {
+        sign = header.substring(0, 4);
+        version = Integer.parseInt(header.substring(4, 6));
+        compressionType = Integer.parseInt(header.substring(6, 7));
+        labNumber = Integer.parseInt(header.substring(7, 8));
+        filesCount = Integer.parseInt(header.substring(8, 9));
+        sourceFileLength = Integer.parseInt(header.substring(16, 20));
+        dataLength = Integer.parseInt(header.substring(20, 24));
+        subheaderLength = Integer.parseInt(header.substring(24, 28));
+    }
+
     public String getSign() {
         return sign;
     }
@@ -70,6 +124,30 @@ public class FileWithHeader {
 
     public int getCompressionType() {
         return compressionType;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public void setLabNumber(int labNumber) {
+        this.labNumber = labNumber;
+    }
+
+    public void setFilesCount(int filesCount) {
+        this.filesCount = filesCount;
+    }
+
+    public void setSubheaderLength(int subheaderLength) {
+        this.subheaderLength = subheaderLength;
+    }
+
+    public void setSource(StringBuilder source) {
+        this.source = source;
     }
 
     public int getLabNumber() {
@@ -110,15 +188,47 @@ public class FileWithHeader {
         return result;
     }
 
-    //TODO: возможно косяк с корректностью преобразования строки в последовательность байтов
     public String getHeader() {
         return sign +
-                version +
+                getStringVersion() +
                 compressionType +
                 labNumber +
                 filesCount +
-                sourceFileLength +
-                dataLength +
-                subheaderLength;
+                "......." +
+                getStringSourceFileLength() +
+                getStringDataLength() +
+                getStringSubheaderLength() +
+                "....";
+    }
+
+    private String getStringVersion() {
+//        return version < 10 ? "0" + version : version + "";
+        return "01";
+    }
+
+    private String getStringSourceFileLength() {
+        sourceFileLength = source.length();
+        if (sourceFileLength < 10)
+            return "000" + sourceFileLength;
+        else if (sourceFileLength < 100)
+            return "00" + sourceFileLength;
+        else if (sourceFileLength < 1000)
+            return "0" + sourceFileLength;
+        else return sourceFileLength + "";
+    }
+
+    private String getStringDataLength() {
+        dataLength = source.length() + 32;
+        if (dataLength < 10)
+            return "000" + dataLength;
+        else if (dataLength < 100)
+            return "00" + dataLength;
+        else if (dataLength < 1000)
+            return "0" + dataLength;
+        else return dataLength + "";
+    }
+
+    private String getStringSubheaderLength(){
+        return "0032";
     }
 }
