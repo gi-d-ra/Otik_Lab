@@ -21,6 +21,7 @@ public class GUI {
 
     private JRadioButton r1 = new JRadioButton("Default");
     private JRadioButton r2 = new JRadioButton("Huffman");
+    private JRadioButton r3 = new JRadioButton("ArithCode");
 
     public GUI() {
         buildGui();
@@ -69,10 +70,12 @@ public class GUI {
         compressionTypes = new ButtonGroup();
         compressionTypes.add(r1);
         compressionTypes.add(r2);
+        compressionTypes.add(r3);
         r1.doClick();
 
         r1.setBounds(75, 50, 100, 30);
         r2.setBounds(75, 100, 100, 30);
+        r3.setBounds(75, 100, 100, 30);
 
         upperPanel1.add(chooseFileButton);
         upperPanel1.add(fileChosenLabel);
@@ -82,6 +85,7 @@ public class GUI {
         upperPanel3.add(unarchiveButton);
         upperPanel4.add(r1);
         upperPanel4.add(r2);
+        upperPanel4.add(r3);
         panelsBox.add(scrollPane);
 
 
@@ -101,6 +105,12 @@ public class GUI {
                     model.getFile().setLabNumber(4);
                     model.getFile().setFilesCount(1);
                     controller.encodeHuffman(model.getFile(), absoluteFilePathToWrite);
+                }
+                if (r3.isSelected()) {
+                    model.getFile().setCompressionType(3);
+                    model.getFile().setLabNumber(5);
+                    model.getFile().setFilesCount(1);
+                    controller.encodeArithm(model.getFile(), absoluteFilePathToWrite);
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -128,6 +138,10 @@ public class GUI {
                         model.getFile().setCompressionType(0);
                         controller.decodeHuffman(model.getFile(), absoluteFilePathToWrite);
                     }
+                    case 3 -> {
+                        model.getFile().setCompressionType(0);
+                        controller.decodeArithm(model.getFile(), absoluteFilePathToWrite);
+                    }
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -139,7 +153,7 @@ public class GUI {
 
         chooseFileButton.addActionListener(l -> {
             JFileChooser chooser = new JFileChooser();
-            chooser.setCurrentDirectory(new java.io.File("D:\\Nick\\University\\4_Kurs_1_Sem\\Otik\\Programs\\Otik_Lab"));
+            chooser.setCurrentDirectory(new java.io.File("D:\\Nick\\University\\4_Kurs_1_Sem\\Otik\\Programs\\Otik_Lab\\files"));
             chooser.showDialog(frame, "Выбрать файл");
             model.setFile(new FileWithHeader(chooser.getSelectedFile()));
             fileChosenLabel.setText(model.getFile().getAbsolutePath());
@@ -149,7 +163,7 @@ public class GUI {
 
         chooseDirToWriteButton.addActionListener(l -> {
             JFileChooser chooser = new JFileChooser();
-            chooser.setCurrentDirectory(new java.io.File("D:\\Nick\\University\\4_Kurs_1_Sem\\Otik\\Programs\\Otik_Lab"));
+            chooser.setCurrentDirectory(new java.io.File("D:\\Nick\\University\\4_Kurs_1_Sem\\Otik\\Programs\\Otik_Lab\\files"));
             chooser.showDialog(frame, "Выбрать папку для записи");
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             chooser.setAcceptAllFileFilterUsed(false);

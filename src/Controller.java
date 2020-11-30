@@ -1,8 +1,13 @@
+import com.colloquial.arithcode.ppm.ArithCodeInputStream;
+import com.colloquial.arithcode.ppm.ArithCodeOutputStream;
+import com.colloquial.arithcode.ppm.PPMModel;
 import compressors.huffman.HFreqTable;
 import compressors.huffman.HuffmanInputStream;
 import compressors.huffman.HuffmanOutputStream;
 
 import java.io.*;
+
+import static com.colloquial.io.Util.copy;
 
 public class Controller {
     Model model;
@@ -13,6 +18,42 @@ public class Controller {
     public Controller(Model model) {
         this.model = model;
     }
+
+
+    public void encodeArithm(FileWithHeader file, String absoluteFilePath) throws IOException {
+        int order = 30;
+        File inFile = file;
+        String fileSeparator = System.getProperty("file.separator");
+        File outFile = new File(absoluteFilePath + fileSeparator + file.getName());
+        preWriteHeader(outFile);
+
+        PPMModel model = new PPMModel(order);
+        InputStream fileIs = new FileInputStream(inFile);
+        InputStream bufIs = new BufferedInputStream(fileIs);
+        OutputStream fileOs = new FileOutputStream(outFile, true);
+        OutputStream bufOs = new BufferedOutputStream(fileOs);
+        OutputStream arithOs = new ArithCodeOutputStream(bufOs, model);
+        copy(bufIs, arithOs);
+    }
+
+
+    public void decodeArithm(FileWithHeader file, String absoluteFilePath) throws IOException {
+        int order = 30;
+        File inFile = file;
+        String fileSeparator = System.getProperty("file.separator");
+        File outFile = new File(absoluteFilePath + fileSeparator + file.getName());
+
+        PPMModel model = new PPMModel(order);
+        InputStream fileIs = new FileInputStream(inFile);
+        fileIs.skip(32);
+        InputStream bufIs = new BufferedInputStream(fileIs);
+        InputStream arithIs = new ArithCodeInputStream(bufIs,model);
+        OutputStream fileOs = new FileOutputStream(outFile);
+        OutputStream bufOs = new BufferedOutputStream(fileOs);
+        copy(arithIs,bufOs);
+        bufOs.close();
+    }
+
 
     public void getInfoFromFile() throws IOException {
         FileReader reader;
@@ -171,6 +212,10 @@ public class Controller {
             ftbl.add(sym);
 
         in.close();
-        System.out.format("Entropy: %.2f\n", ftbl.entropy() * file.length());
+        System.out.format("Entropy: %.2f\n", ftbl.entropy()
+//                * file.length()
+        );
     }
+
+
 }
